@@ -1,10 +1,11 @@
 <template>
-  <router-view></router-view>
+test!
 </template>
 
 <script setup>
 
 </script>
+
 <style scoped>
 
 </style>
