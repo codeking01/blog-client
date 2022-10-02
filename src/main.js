@@ -16,12 +16,10 @@ app.provide("axios", axios)
 const {message, notification, dialog} = createDiscreteApi(
     ["message", "dialog", "notification"],
 );
-
-
-
 app.provide("message", message);
 app.provide("notification", notification);
 app.provide("dialog", dialog);
+app.provide("server_url", axios.defaults.baseURL);
 
 app.use(naive)
 app.use(createPinia())

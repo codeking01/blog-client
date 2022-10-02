@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import {AdminStore} from "../../stores/AdminStore.js";
+import {AdminStore} from "@/stores/AdminStore.js";
 import {inject, reactive} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 
