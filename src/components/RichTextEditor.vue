@@ -18,8 +18,7 @@
 </template>
 
 <script setup>
-import {AdminStore} from "@/stores/AdminStore.js";
-import {inject, nextTick, onBeforeUnmount, onMounted, reactive, ref, shallowRef} from 'vue'
+import {inject, nextTick, onBeforeUnmount, onMounted, ref, shallowRef} from 'vue'
 import '@wangeditor/editor/dist/css/style.css';
 import {Editor, Toolbar} from '@wangeditor/editor-for-vue';
 
@@ -27,7 +26,7 @@ const server_url = inject('server_url');
 
 // 编辑器实例，必须用 shallowRef，重要！
 const editorRef = shallowRef();
-const toolbarConfig = {excludeKeys: ['uploadVideo', 'italic','group-more-style']} // 排除菜单组，写菜单组 key 的值即可
+const toolbarConfig = {excludeKeys: ['uploadVideo', 'italic', 'group-more-style']} // 排除菜单组，写菜单组 key 的值即可
 const editorConfig = {placeholder: '请输入内容...'};
 editorConfig.MENU_CONF = {}
 editorConfig.MENU_CONF['uploadImage'] = {
@@ -65,11 +64,12 @@ onBeforeUnmount(() => {
 });
 
 // 这个先将数据传入好了在进行数据的渲染
-onMounted(async () => {
+onMounted(() => {
   // 使用nextTick，让页面数据渲染完成后在渲染DOM
-  await nextTick(() => {
+  nextTick(() => {
     valueHtml.value = props.modelValue;
   });
+
 })
 
 // 编辑器回调函数

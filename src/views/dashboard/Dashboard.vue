@@ -39,6 +39,7 @@ const toPage = (menu) => {
       negativeText: '取消',
       positiveText: '确定',
       onPositiveClick: () => {
+        // 清空token，退出登录
         localStorage.setItem("token", "")
         router.push("/login")
         message.success('退出成功')
