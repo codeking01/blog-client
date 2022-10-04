@@ -9,6 +9,9 @@
               <template #description>
                 <n-space size="small" style="margin-top: 4px">
                   <n-tag :bordered="false" type="info" size="small">
+                    {{ item.name }}
+                  </n-tag>
+                  <n-tag :bordered="false" type="info" size="small">
                     {{ item.create_time }}
                   </n-tag>
                 </n-space>
@@ -16,7 +19,7 @@
               {{ item.content }}
             </n-thing>
             <template #suffix>
-              <n-space>
+              <n-space justify="end">
                 <n-button @click="toUpdate(item)">修改</n-button>
                 <n-button @click="Delete(item.id)">删除</n-button>
               </n-space>
@@ -42,7 +45,7 @@
             <n-input v-model:value="addArticle.title" placeholder="请输入文章标题"/>
           </n-form-item>
           <n-form-item label="分类">
-            <n-select v-model:value="addArticle.category_id" :options="CategoryOptions"/>
+            <n-select v-model:value="addArticle.category_id" :options="CategoryOptions"  placeholder="选择分类"/>
           </n-form-item>
           <n-form-item label="内容">
             <!-- v-model 实现双向绑定 -->
@@ -58,7 +61,7 @@
             <n-input v-model:value="updateArticle.title" placeholder="请输入文章标题"/>
           </n-form-item>
           <n-form-item label="分类">
-            <n-select v-model:value="updateArticle.category_id" :options="CategoryOptions"/>
+            <n-select v-model:value="updateArticle.category_id" :options="CategoryOptions" placeholder="选择分类"/>
           </n-form-item>
           <n-form-item label="内容">
             <!-- v-model 实现双向绑定 -->
@@ -73,22 +76,21 @@
 </template>
 
 <script setup>
-import {inject, nextTick, onMounted, reactive, ref, watch} from 'vue'
+import {inject, nextTick, onMounted, reactive, ref} from 'vue'
 import RichTextEditor from "@/components/RichTextEditor.vue"
-import {router} from "@/common/router.js";
 
 const message = inject("message")
 const dialog = inject("dialog")
 const axios = inject("axios")
 
 const addArticle = reactive({
-  category_id: 0,
-  title: "",
+  category_id: null,
+  title: null,
   content: ""
 })
 
 const updateArticle = reactive({
-  id: "",
+  id: null,
   category_id: "",
   title: "",
   content: ""
@@ -140,8 +142,8 @@ const loadBlogData = async () => {
   if (res.data.code === 200) {
     let tempRow = res.data.data.rows
     // 有可能删除后最后一页没数据
-    if(tempRow.length === 0 && PageInfo.page>1) {
-      PageInfo.page-=1
+    if (tempRow.length === 0 && PageInfo.page > 1) {
+      PageInfo.page -= 1
       res = await axios.get(`/blogRouters/list?page=${PageInfo.page}&pagesize=${PageInfo.pagesize}`)
       tempRow = res.data.data.rows
     }
@@ -150,7 +152,7 @@ const loadBlogData = async () => {
         row.content += '...';
       }
       let time_flag = new Date(row.create_time);
-      row.create_time = `${time_flag.getFullYear()} 年 ${time_flag.getMonth() + 1}月${time_flag.getDate()}日`
+      row.create_time = `${time_flag.getFullYear()}年${time_flag.getMonth() + 1}月${time_flag.getDate()}日${time_flag.getHours()}点${time_flag.getMinutes()}分`
     }
     BlogData.value = tempRow
     // 将文章总数传给PageInfo
@@ -161,17 +163,21 @@ const loadBlogData = async () => {
 }
 
 const Add = async () => {
-  let res = await axios.post('/blogRouters/_token/add', addArticle)
-  if (res.data.code === 200) {
-    addArticle.category_id = 0;
-    addArticle.title = "";
-    addArticle.content = "";
-    await loadBlogData();
-    message.info(res.data.msg)
-    tabValue.value = "article"
-  } else {
-    message.error(res.data.msg)
+  if(addArticle.category_id && addArticle.title){
+    let res = await axios.post('/blogRouters/_token/add', addArticle)
+    if (res.data.code === 200) {
+      // 置空其他的信息
+      addArticle.category_id = null;
+      addArticle.title = null;
+      addArticle.content = "";
+      await loadBlogData();
+      message.info(res.data.msg)
+      tabValue.value = "article"
+    } else {
+      message.error(res.data.msg)
+    }
   }
+  message.warning("请选择分类或者补全标题！")
 }
 
 const update = async () => {
@@ -187,15 +193,27 @@ const update = async () => {
 }
 
 const Delete = async (id) => {
-  let res = await axios.delete('/blogRouters/_token/delete?id=' + id);
-  if (res.data.code === 200) {
-    await nextTick(() => {
-      loadBlogData()
-    })
-    message.success(res.data.msg)
-  } else {
-    message.error(res.data.msg)
-  }
+  dialog.warning({
+    title: '警告',
+    content: '确定删除？',
+    negativeText: '取消',
+    positiveText: '确定',
+    onPositiveClick: async () => {
+      let res = await axios.delete('/blogRouters/_token/delete?id=' + id);
+      if (res.data.code === 200) {
+        await nextTick(() => {
+          loadBlogData()
+        })
+        message.success(res.data.msg)
+      } else {
+        message.error(res.data.msg)
+      }
+    },
+    onNegativeClick: () => {
+      message.success('取消删除')
+    }
+  })
+
 }
 
 onMounted(() => {

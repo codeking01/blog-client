@@ -27,6 +27,7 @@ const adminStore = AdminStore()
 const menus = reactive([
   {name: "文章管理", href: "/dashboard/article"},
   {name: "分类管理", href: "/dashboard/category"},
+  {name: "回到首页", href: "/"},
   {name: "退出", href: "logout"},
 ])
 
