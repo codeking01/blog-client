@@ -22,7 +22,7 @@
     <n-list-item v-for="(item,index) in BlogData">
       <template #prefix>
       </template>
-      <n-thing :title="item.title" content-style="margin-top: 10px;">
+      <n-thing :title="item.title" content-style="margin-top: 10px;" @click="ToDetails(item)">
         <template #description>
           <n-space size="small" style="margin-top: 4px">
             <n-tag :bordered="false" type="info" size="small">
@@ -53,11 +53,13 @@
 import {h, inject, onMounted, reactive, ref} from "vue";
 import {NIcon} from "naive-ui";
 import {HomeOutline as HomeIcon, Pencil as EditIcon} from "@vicons/ionicons5";
-import {useRouter} from "vue-router";
+import {useRouter} from 'vue-router'
+
 
 const message = inject("message")
 const axios = inject("axios")
 const router = useRouter()
+
 
 let CategoryOptions = ref([])
 let BlogData = ref([])
@@ -145,10 +147,13 @@ const GoHome = () => {
 const ToDashboard = () => {
   router.push('/dashboard/article')
 }
+const ToDetails = (item) => {
+  router.push({path: "/details", query: {id: item.id}})
+}
 
 const search = async (current_page) => {
   // 判断是搜索点击过来的 还是翻页触发的事件
-  PageInfo.page=current_page? current_page:PageInfo.page;
+  PageInfo.page = current_page ? current_page : PageInfo.page;
   // console.log("****", `/blogRouters/list?keyword=${keyword.value}&page=${PageInfo.page}&pagesize=${PageInfo.pagesize}`)
   let search_url;
   if (selectedItem.category_id) {
@@ -181,9 +186,9 @@ const search = async (current_page) => {
   }
 }
 // 清除分类
-const clearCategory=()=>{
-  selectedItem.category_id =null;
-  selectedItem.label="选择分类"
+const clearCategory = () => {
+  selectedItem.category_id = null;
+  selectedItem.label = "选择分类"
 }
 
 onMounted(() => {

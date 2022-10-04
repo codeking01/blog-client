@@ -4,11 +4,13 @@ const routes = [
     {path: '/test', component: () => import('@/views/Test.vue')},
     {path: '/login', component: () => import('@/views/Login.vue')},
     {path: '/', component: () => import('@/views/HomePage.vue')},
+    {path: '/details', component: () => import('@/views/Details.vue')},
     {
         path: '/dashboard', component: () => import('@/views/dashboard/Dashboard.vue'),
         children: [
             {path: '/dashboard/article', component: () => import ('@/views/dashboard/article.vue')},
-            {path: '/dashboard/category', component: () => import('@/views/dashboard/category.vue')}
+            {path: '/dashboard/category', component: () => import('@/views/dashboard/category.vue')},
+            {path: '/dashboard/userInfo', component: () => import('@/views/dashboard/userInfo.vue')}
         ]
     }
 ]

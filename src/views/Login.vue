@@ -10,6 +10,7 @@
         </n-form-item>
       </n-form>
       <template #footer>
+
         <n-checkbox v-model:checked="admin.remember" label="记住我"/>
         <n-button @click="login">登录</n-button>
       </template>
@@ -37,7 +38,7 @@ let rules = {
   ],
   password: [
     {required: true, message: "请输入密码", trigger: "blur"},
-    {min: 6, max: 18, message: "密码长度在 6 到 18 个字符", trigger: "blur"},
+    {min: 4, max: 18, message: "密码长度在 4 到 18 个字符", trigger: "blur"},
   ],
 };
 
@@ -66,7 +67,7 @@ const login = async () => {
       localStorage.setItem("password", admin.password)
       localStorage.setItem("remember", admin.remember ? '1' : '0')
     }
-    await router.push("/dashboard")
+    await router.push("/dashboard/article")
     message.info("登录成功")
   } else {
     message.error("登录失败")

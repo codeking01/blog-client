@@ -45,7 +45,7 @@
             <n-input v-model:value="addArticle.title" placeholder="请输入文章标题"/>
           </n-form-item>
           <n-form-item label="分类">
-            <n-select v-model:value="addArticle.category_id" :options="CategoryOptions"  placeholder="选择分类"/>
+            <n-select v-model:value="addArticle.category_id" :options="CategoryOptions" placeholder="选择分类"/>
           </n-form-item>
           <n-form-item label="内容">
             <!-- v-model 实现双向绑定 -->
@@ -113,12 +113,16 @@ let tabValue = ref("article")
 const toUpdate = async (blog) => {
   // 向服务端请求查找
   let res = await axios.get('/blogRouters/details?id=' + blog.id)
-  updateArticle.id = blog.id
-  updateArticle.category_id = res.data.data.rows[0].category_id
-  updateArticle.title = res.data.data.rows[0].title
-  updateArticle.content = res.data.data.rows[0].content
-  // 等数据渲染结束了在跳转过去
-  tabValue.value = "update"
+  if (res.data.code === 200) {
+    updateArticle.id = blog.id
+    updateArticle.category_id = res.data.data.rows[0].category_id
+    updateArticle.title = res.data.data.rows[0].title
+    updateArticle.content = res.data.data.rows[0].content
+    // 等数据渲染结束了在跳转过去
+    tabValue.value = "update"
+  } else {
+    message.error(res.data.msg)
+  }
 }
 
 const loadCategoryData = async () => {
@@ -163,7 +167,7 @@ const loadBlogData = async () => {
 }
 
 const Add = async () => {
-  if(addArticle.category_id && addArticle.title){
+  if (addArticle.category_id && addArticle.title) {
     let res = await axios.post('/blogRouters/_token/add', addArticle)
     if (res.data.code === 200) {
       // 置空其他的信息
@@ -174,10 +178,9 @@ const Add = async () => {
       message.info(res.data.msg)
       tabValue.value = "article"
     } else {
-      message.error(res.data.msg)
+      message.warning("请选择分类或者补全标题！")
     }
   }
-  message.warning("请选择分类或者补全标题！")
 }
 
 const update = async () => {

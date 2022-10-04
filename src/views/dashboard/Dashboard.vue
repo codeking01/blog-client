@@ -28,6 +28,7 @@ const menus = reactive([
   {name: "文章管理", href: "/dashboard/article"},
   {name: "分类管理", href: "/dashboard/category"},
   {name: "回到首页", href: "/"},
+  {name: "登录与注册", href: "/dashboard/userInfo"},
   {name: "退出", href: "logout"},
 ])
 
@@ -42,7 +43,7 @@ const toPage = (menu) => {
       onPositiveClick: () => {
         // 清空token，退出登录
         localStorage.setItem("token", "")
-        router.push("/login")
+        router.push("/")
         message.success('退出成功')
       },
       onNegativeClick: () => {
