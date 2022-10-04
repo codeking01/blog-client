@@ -17,7 +17,7 @@
       </n-dropdown>
       <n-button type="primary" ghost @click="clearCategory">清除分类</n-button>
       <n-input :style="{ width: '500px' }" placeholder="输入关键词" v-model:value="keyword"/>
-      <n-button type="primary" ghost @click="search">搜索</n-button>
+      <n-button type="primary" ghost @click="search(1)">搜索</n-button>
     </n-space>
     <n-list-item v-for="(item,index) in BlogData">
       <template #prefix>
@@ -37,11 +37,9 @@
       </n-thing>
     </n-list-item>
     <template #footer>
-      <!-- 分页    -->
       <n-space justify="center">
-        <!--  @update:page="loadBlogData"  处理页面数据改变时候的跳转，也可以使用监听函数watch实现-->
         <n-pagination v-model:page="PageInfo.page" :page-count="PageInfo.count"
-                      @update:page="loadBlogData" @update:page-size="loadBlogData">
+                      @update:page="search">
           <template #goto>
             跳转至
           </template>
@@ -148,7 +146,9 @@ const ToDashboard = () => {
   router.push('/dashboard/article')
 }
 
-const search = async () => {
+const search = async (current_page) => {
+  // 判断是搜索点击过来的 还是翻页触发的事件
+  PageInfo.page=current_page? current_page:PageInfo.page;
   // console.log("****", `/blogRouters/list?keyword=${keyword.value}&page=${PageInfo.page}&pagesize=${PageInfo.pagesize}`)
   let search_url;
   if (selectedItem.category_id) {
